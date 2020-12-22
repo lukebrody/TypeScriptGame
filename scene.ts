@@ -1,23 +1,6 @@
-export {};
-
-const mainViewport = <HTMLCanvasElement> document.getElementById("mainViewport");
-const context = <CanvasRenderingContext2D> mainViewport.getContext("2d");
-
-let controls = {
-    keys: new Map<KeyboardEvent["key"], boolean>(),
-
-    keyPressed(key: KeyboardEvent["key"]): boolean {
-        return this.keys.get(key) ?? false;
-    }
-}
-
-window.addEventListener("keydown", event => {
-    controls.keys.set(event.key, true);
-});
-
-window.addEventListener("keyup", event => {
-    controls.keys.set(event.key, false);
-});
+import { controls } from "./controls.js"
+export { Scene, Sphere, Player }
+import { Point2D, Vector2D } from "./math.js"
 
 type time = number;
 
@@ -49,49 +32,6 @@ class Sphere implements GameElement {
         const size = 50;
         context.fillStyle = "#000000";
         context.fillRect(center.x - (size / 2), center.y - (size / 2), size, size);
-    }
-}
-
-class Point2D {
-    x: number
-    y: number
-
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    add(vec: Vector2D): Point2D {
-        return new Point2D(this.x + vec.x, this.y + vec.y);
-    }
-}
-class Vector2D {
-    x: number 
-    y: number
-
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    magnitude(): number {
-        return Math.sqrt(this.x * this.x + this.y * this.y);
-    }
-
-    mul(mul: number): Vector2D {
-        return new Vector2D(this.x * mul, this.y * mul);
-    }
-
-    div(divisor: number): Vector2D {
-        return new Vector2D(this.x / divisor, this.y / divisor);
-    }
-
-    normalized(): Vector2D {
-        if(this.magnitude() === 0) {
-            return new Vector2D(0, 0);
-        } else {
-            return this.div(this.magnitude());
-        }
     }
 }
 
@@ -130,19 +70,3 @@ class Player implements GameElement {
         ctx.fill();
     }
 }
-
-let scene = new Scene([new Sphere(), new Player(new Point2D(100, 100), 200, 20)]);
-
-let lastTimestamp: DOMHighResTimeStamp = performance.now();
-
-function render(timestamp: DOMHighResTimeStamp): void {
-    let frame = timestamp / 1000;
-    let lastFrame = lastTimestamp / 1000;
-    scene.update(frame, frame - lastFrame);
-    context.clearRect(0, 0, mainViewport.width, mainViewport.height);
-    scene.draw(frame, context);
-    lastTimestamp = timestamp;
-    requestAnimationFrame(render);
-}
-
-requestAnimationFrame(render);
