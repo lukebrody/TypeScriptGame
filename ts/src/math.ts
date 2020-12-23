@@ -16,6 +16,10 @@ export class Point {
     sub(vec: Vector): Point {
         return new Point(this.x - vec.x, this.y - vec.y);
     }
+
+    subPt(point: Point): Vector {
+        return new Vector(this.x - point.x, this.y - point.y);
+    }
 }
 export class Vector {
     x: number 
@@ -48,6 +52,18 @@ export class Vector {
 
     abs(): Vector {
         return new Vector(Math.abs(this.x), Math.abs(this.y));
+    }
+
+    dot(vec: Vector): number {
+        return this.x * vec.x + this.y * vec.y;
+    }
+
+    projectOnto(vec: Vector): Vector {
+        if(vec.magnitude() === 0) {
+            return new Vector(0, 0);
+        } else {
+            return vec.mul(this.dot(vec) / (vec.magnitude() * vec.magnitude()));
+        }
     }
 }
 
@@ -92,6 +108,10 @@ export class Rect {
                 return new Rect(new Point(xIntersect.min, yIntersect.min), new Vector(xIntersect.length(), yIntersect.length()));
             });
         });
+    }
+
+    center(): Point {
+        return this.origin.add(this.size.div(2));
     }
 }
 

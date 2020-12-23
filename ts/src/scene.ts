@@ -1,5 +1,6 @@
 import { controls } from "./controls"
 import { Point, Rect, Vector } from "./math"
+import { sleep } from "./utils"
 import { None, Option } from "prelude-ts"
 
 type time = number;
@@ -21,6 +22,8 @@ export class Scene implements GameElement {
         this.drawables = drawables;
     }
 
+    savedCollisionRect: Option<Rect> = Option.none();
+
     update(frame: time, delta: time): void {
         this.drawables.forEach(drawable => { drawable.update(frame, delta); });
         
@@ -29,7 +32,10 @@ export class Scene implements GameElement {
                 this.drawables.forEach(environment => {
                     environment.collisionStatic(frame).map(envRect => {
                         targetRect.intersect(envRect).map(collisionRect => { 
-                            console.log(collisionRect);
+                            let centersVector = targetRect.center().subPt(envRect.center());
+                            this.savedCollisionRect = Option.some(collisionRect);
+                            let moveVector = collisionRect.size.projectOnto(centersVector);
+                            target.collide(moveVector);
                         });
                     });
                 });
@@ -38,7 +44,21 @@ export class Scene implements GameElement {
     }
 
     draw(frame: time, context: CanvasRenderingContext2D): void {
-        this.drawables.forEach(drawable => { drawable.draw(frame, context); });
+        this.drawables.forEach(drawable => { 
+            drawable.draw(frame, context); 
+            drawable.collisionStatic(frame).map(staticCollisionRect => {
+                context.fillStyle = "#00ff00";
+                context.fillRect(staticCollisionRect.origin.x, staticCollisionRect.origin.y, staticCollisionRect.size.x, staticCollisionRect.size.y);
+            });
+            drawable.collisionDynamic().map(dynamicCollisionRect => {
+                context.fillStyle = "#00ff00";
+                context.fillRect(dynamicCollisionRect.origin.x, dynamicCollisionRect.origin.y, dynamicCollisionRect.size.x, dynamicCollisionRect.size.y);
+            });
+        });
+        this.savedCollisionRect.map(collisionRect => {
+            context.fillStyle = "#ff0000";
+            context.fillRect(collisionRect.origin.x, collisionRect.origin.y, collisionRect.size.x, collisionRect.size.y);
+        });
     }
 
     collisionStatic(frame: time): Option<Rect> {
@@ -121,9 +141,11 @@ export class Player implements GameElement {
     }
 
     collisionDynamic(): Option<Rect> {
-        const size = new Vector(this.radius, this.radius)
-        return Option.some(new Rect(this.position.sub(size.div(2)), size))
+        const size = new Vector(this.radius * 2, this.radius * 2);
+        return Option.some(new Rect(this.position.sub(size.div(2)), size));
     }
 
-    collide(move: Vector): void {}
+    collide(move: Vector): void {
+        this.position = this.position.add(move);
+    }
 }
