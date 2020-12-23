@@ -1,10 +1,10 @@
-import { Scene, Sphere, Player} from "./scene"
+import { Scene, Square, Player} from "./scene"
 import { Point } from "./math"
 
 const mainViewport = <HTMLCanvasElement> document.getElementById("mainViewport");
 const context = <CanvasRenderingContext2D> mainViewport.getContext("2d");
 
-let scene = new Scene([new Sphere(), new Player(new Point(100, 100), 200, 20)]);
+let scene = new Scene([new Square(), new Player(new Point(100, 100), 200, 20)]);
 
 let lastTimestamp: DOMHighResTimeStamp = performance.now();
 

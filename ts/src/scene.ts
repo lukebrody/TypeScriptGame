@@ -24,7 +24,7 @@ export class Scene implements GameElement {
     }
 }
 
-export class Sphere implements GameElement {
+export class Square implements GameElement {
     update(frame: time, delta: time): void {}
     draw(frame: time, context: CanvasRenderingContext2D): void {
         const center = { x: 100, y: 100 + (50 * Math.sin(frame)) };
