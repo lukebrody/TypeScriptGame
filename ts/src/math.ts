@@ -1,6 +1,5 @@
-export { Point2D, Vector2D }
 
-class Point2D {
+export class Point {
     x: number
     y: number
 
@@ -9,11 +8,11 @@ class Point2D {
         this.y = y;
     }
 
-    add(vec: Vector2D): Point2D {
-        return new Point2D(this.x + vec.x, this.y + vec.y);
+    add(vec: Vector): Point {
+        return new Point(this.x + vec.x, this.y + vec.y);
     }
 }
-class Vector2D {
+export class Vector {
     x: number 
     y: number
 
@@ -26,17 +25,17 @@ class Vector2D {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
-    mul(mul: number): Vector2D {
-        return new Vector2D(this.x * mul, this.y * mul);
+    mul(mul: number): Vector {
+        return new Vector(this.x * mul, this.y * mul);
     }
 
-    div(divisor: number): Vector2D {
-        return new Vector2D(this.x / divisor, this.y / divisor);
+    div(divisor: number): Vector {
+        return new Vector(this.x / divisor, this.y / divisor);
     }
 
-    normalized(): Vector2D {
+    normalized(): Vector {
         if(this.magnitude() === 0) {
-            return new Vector2D(0, 0);
+            return new Vector(0, 0);
         } else {
             return this.div(this.magnitude());
         }

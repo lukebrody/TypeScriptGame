@@ -1,6 +1,6 @@
 import { controls } from "./controls"
 export { Scene, Sphere, Player }
-import { Point2D, Vector2D } from "./math"
+import { Point, Vector } from "./math"
 
 type time = number;
 
@@ -36,18 +36,18 @@ class Sphere implements GameElement {
 }
 
 class Player implements GameElement {
-    position: Point2D
+    position: Point
     speed: number
     radius: number
 
-    constructor(position: Point2D, speed: number, radius: number) {
+    constructor(position: Point, speed: number, radius: number) {
         this.position = position;
         this.speed = speed;
         this.radius = radius;
     }
 
     update(frame: time, delta: time): void {
-        let vector = new Vector2D(0, 0);
+        let vector = new Vector(0, 0);
         if(controls.keyPressed("a")) {
             vector.x -= 1;
         }
