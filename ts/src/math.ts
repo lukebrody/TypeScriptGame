@@ -41,3 +41,13 @@ export class Vector {
         }
     }
 }
+
+export class Rect {
+    origin: Point
+    size: Vector
+
+    constructor(origin: Point, size: Vector) {
+        this.origin = origin;
+        this.size = size;
+    }
+}
