@@ -1,3 +1,4 @@
+import { Option } from "prelude-ts"
 
 export class Point {
     x: number
@@ -10,6 +11,10 @@ export class Point {
 
     add(vec: Vector): Point {
         return new Point(this.x + vec.x, this.y + vec.y);
+    }
+
+    sub(vec: Vector): Point {
+        return new Point(this.x - vec.x, this.y - vec.y);
     }
 }
 export class Vector {
@@ -40,6 +45,10 @@ export class Vector {
             return this.div(this.magnitude());
         }
     }
+
+    abs(): Vector {
+        return new Vector(Math.abs(this.x), Math.abs(this.y));
+    }
 }
 
 export class Rect {
@@ -49,5 +58,68 @@ export class Rect {
     constructor(origin: Point, size: Vector) {
         this.origin = origin;
         this.size = size;
+    }
+
+    normalized(): Rect {
+        return new Rect(
+            new Point(
+                Math.min(this.origin.x, this.origin.x + this.size.x), 
+                Math.min(this.origin.y, this.origin.y + this.size.y)
+            ),
+            this.size.abs()
+        );
+    }
+
+    min(): Point {
+        return this.normalized().origin;
+    }
+
+    max(): Point {
+        return this.normalized().origin.add(this.normalized().size);
+    }
+
+    xRange(): Range {
+        return new Range(this.min().x, this.max().x);
+    }
+
+    yRange(): Range {
+        return new Range(this.min().y, this.max().y);
+    }
+
+    intersect(other: Rect): Option<Rect> {
+        return this.xRange().intersect(other.xRange()).flatMap(xIntersect => {
+            return this.yRange().intersect(other.yRange()).map(yIntersect => {
+                return new Rect(new Point(xIntersect.min, yIntersect.min), new Vector(xIntersect.length(), yIntersect.length()));
+            });
+        });
+    }
+}
+
+export class Range {
+    min: number
+    max: number
+
+    constructor(min: number, max: number) {
+        console.assert(min <= max);
+        this.min = min;
+        this.max = max;
+    }
+
+    contains(value: number): boolean {
+        return value >= this.min && value <= this.max;
+    }
+
+    intersect(other: Range): Option<Range> {
+        const newMin = Math.max(this.min, other.min);
+        const newMax = Math.min(this.max, other.max);
+        if(newMin <= newMax) {
+            return Option.some(new Range(newMin, newMax));
+        } else {
+            return Option.none();
+        }
+    }
+
+    length(): number {
+        return this.max - this.min;
     }
 }
