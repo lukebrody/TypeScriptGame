@@ -1,5 +1,4 @@
 import { controls } from "./controls"
-export { Scene, Sphere, Player }
 import { Point, Vector } from "./math"
 
 type time = number;
@@ -9,7 +8,7 @@ interface GameElement {
     draw(fame: time, context: CanvasRenderingContext2D): void
 }
 
-class Scene implements GameElement {
+export class Scene implements GameElement {
     drawables: GameElement[]
 
     constructor(drawables: GameElement[]) {
@@ -25,7 +24,7 @@ class Scene implements GameElement {
     }
 }
 
-class Sphere implements GameElement {
+export class Sphere implements GameElement {
     update(frame: time, delta: time): void {}
     draw(frame: time, context: CanvasRenderingContext2D): void {
         const center = { x: 100, y: 100 + (50 * Math.sin(frame)) };
@@ -35,7 +34,7 @@ class Sphere implements GameElement {
     }
 }
 
-class Player implements GameElement {
+export class Player implements GameElement {
     position: Point
     speed: number
     radius: number

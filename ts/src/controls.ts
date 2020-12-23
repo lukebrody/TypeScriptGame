@@ -1,6 +1,5 @@
-export {controls};
 
-let controls = {
+export let controls = {
     keys: new Map<KeyboardEvent["key"], boolean>(),
 
     keyPressed(key: KeyboardEvent["key"]): boolean {

@@ -1,4 +1,3 @@
-export {};
 import { Scene, Sphere, Player} from "./scene"
 import { Point } from "./math"
 
