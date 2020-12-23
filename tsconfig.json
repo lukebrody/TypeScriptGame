@@ -1,12 +1,15 @@
 {
-    "compilerOptions": {
-        "target": "ES6",
-        "module": "ES6",
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true
-    },
-    "$schema": "https://json.schemastore.org/tsconfig",
-    "display": "Recommended"
+  "compilerOptions": {
+    "rootDir": "ts",
+    "outDir": "dist",
+    "target": "es2019",
+    "lib": [
+      "es2019",
+      "dom"
+    ],
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "strict": true,
+    "sourceMap": true
+  }
 }

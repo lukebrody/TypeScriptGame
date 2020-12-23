@@ -1,6 +1,6 @@
-import { controls } from "./controls.js"
+import { controls } from "./controls"
 export { Scene, Sphere, Player }
-import { Point2D, Vector2D } from "./math.js"
+import { Point2D, Vector2D } from "./math"
 
 type time = number;
 

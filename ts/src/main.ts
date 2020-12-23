@@ -1,6 +1,6 @@
 export {};
-import { Scene, Sphere, Player} from "./scene.js"
-import { Point2D } from "./math.js"
+import { Scene, Sphere, Player} from "./scene"
+import { Point2D } from "./math"
 
 const mainViewport = <HTMLCanvasElement> document.getElementById("mainViewport");
 const context = <CanvasRenderingContext2D> mainViewport.getContext("2d");
