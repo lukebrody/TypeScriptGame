@@ -1,6 +1,5 @@
 import { controls } from "./controls"
 import { Point, Rect, Vector } from "./math"
-import { sleep } from "./utils"
 import { None, Option } from "prelude-ts"
 
 type time = number;
@@ -12,7 +11,7 @@ interface GameElement {
     collisionStatic(frame: time): Option<Rect>
     collisionDynamic(): Option<Rect>
 
-    collide(move: Vector): void
+    collide(collisionRect: Rect): void
 }
 
 export class Scene implements GameElement {
@@ -32,10 +31,17 @@ export class Scene implements GameElement {
                 this.drawables.forEach(environment => {
                     environment.collisionStatic(frame).map(envRect => {
                         targetRect.intersect(envRect).map(collisionRect => { 
-                            let centersVector = targetRect.center().subPt(envRect.center());
                             this.savedCollisionRect = Option.some(collisionRect);
-                            let moveVector = collisionRect.size.projectOnto(centersVector);
-                            target.collide(moveVector);
+                            let centersVector = targetRect.center().subPt(envRect.center());
+                            if (centersVector.x < 0) {
+                                collisionRect.origin.x += collisionRect.size.x;
+                                collisionRect.size.x *= -1;
+                            }
+                            if (centersVector.y < 0) {
+                                collisionRect.origin.y += collisionRect.size.y;
+                                collisionRect.size.y *= -1;
+                            }
+                            target.collide(collisionRect);
                         });
                     });
                 });
@@ -69,7 +75,7 @@ export class Scene implements GameElement {
         return Option.none()
     }
 
-    collide(move: Vector): void {}
+    collide(move: Rect): void {}
 }
 
 export class Square implements GameElement {
@@ -98,7 +104,7 @@ export class Square implements GameElement {
         return Option.none()
     }
 
-    collide(move: Vector): void {}
+    collide(move: Rect): void {}
 }
 
 export class Player implements GameElement {
@@ -145,7 +151,11 @@ export class Player implements GameElement {
         return Option.some(new Rect(this.position.sub(size.div(2)), size));
     }
 
-    collide(move: Vector): void {
-        this.position = this.position.add(move);
+    collide(move: Rect): void {
+        if (Math.abs(move.size.y) < Math.abs(move.size.x)) {
+            this.position.y += move.size.y;
+        } else {
+            this.position.x += move.size.x;
+        }
     }
 }
