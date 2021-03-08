@@ -40,7 +40,7 @@ export class Player implements GameElement {
         if(controls.keyPressed("d")) {
             acceleration.x += this.moveAcceleration;
         }
-        if((controls.keyPressed("w") || controls.keyPressed(" ")) && this.speed.y == 0 && this.jumpKeypress) {
+        if((controls.keyPressed("w") || controls.keyPressed(" ")) && Math.abs(this.speed.y) < 10 && this.jumpKeypress) {
             acceleration.y -= this.jumpAcceleration;
             this.jumpKeypress = false;
         }
@@ -73,7 +73,7 @@ export class Player implements GameElement {
     collide(move: Rect, delta: time): void {
         if (Math.abs(move.size.y) < Math.abs(move.size.x)) {
             this.position.y += move.size.y;
-            this.speed.y = 0;
+            this.speed.y *= -0.5;
             if(!(controls.keyPressed("a") || controls.keyPressed("d"))) {
                 if(this.speed.x > 0) {
                     this.speed.x = Math.max(0, this.speed.x - (this.friction * delta));
@@ -83,7 +83,7 @@ export class Player implements GameElement {
             }
         } else {
             this.position.x += move.size.x;
-            this.speed.x = 0;
+            this.speed.x *= -0.5;
         }
     }
 }
