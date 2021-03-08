@@ -76,6 +76,10 @@ export class Rect {
         this.size = size;
     }
 
+    static make(x: number, y: number, w: number, h: number) {
+        return new Rect(new Point(x, y), new Vector(w, h));
+    }
+
     normalized(): Rect {
         return new Rect(
             new Point(

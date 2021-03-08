@@ -8,6 +8,6 @@ install `npm` somehow
 
 `npm run wpw` (watches files for changes, recompiles code)
 
-(in a separate terminal) `npm run server` (serves the website)
+(in a separate terminal) `npm run serve` (serves the website)
 
 Visit `127.0.0.1:8080` in your browser
