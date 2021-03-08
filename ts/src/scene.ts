@@ -30,7 +30,7 @@ export class Scene implements GameElement {
                                 collisionRect.origin.y += collisionRect.size.y;
                                 collisionRect.size.y *= -1;
                             }
-                            target.collide(collisionRect);
+                            target.collide(collisionRect, delta);
                         });
                     });
                 });
@@ -64,5 +64,5 @@ export class Scene implements GameElement {
         return Option.none()
     }
 
-    collide(move: Rect): void {}
+    collide(move: Rect, delta: time): void {}
 }

@@ -12,14 +12,16 @@ export class Player implements GameElement {
     speed = new Vector(0, 0);
     jumpAcceleration: number
     canJump = true;
+    friction: number
 
-    constructor(position: Point, maxSpeed: Vector, moveAcceleration: number, gravity: number, radius: number, jumpAcceleration: number) {
+    constructor(position: Point, maxSpeed: Vector, moveAcceleration: number, gravity: number, radius: number, jumpAcceleration: number, friction: number) {
         this.position = position;
         this.maxSpeed = maxSpeed;
         this.gravity = gravity;
         this.radius = radius;
         this.moveAcceleration = moveAcceleration;
         this.jumpAcceleration = jumpAcceleration;
+        this.friction = friction;
     }
 
     update(frame: time, delta: time): void {
@@ -57,14 +59,19 @@ export class Player implements GameElement {
         return Option.some(new Rect(this.position.sub(size.div(2)), size));
     }
 
-    collide(move: Rect): void {
+    collide(move: Rect, delta: time): void {
         if (Math.abs(move.size.y) < Math.abs(move.size.x)) {
             this.position.y += move.size.y;
             this.speed.y = 0;
+            if(this.speed.x > 0) {
+                this.speed.x = Math.max(0, this.speed.x - (this.friction * delta));
+            } else {
+                this.speed.x = Math.min(0, this.speed.x + (this.friction * delta));
+            }
+            this.canJump = true;
         } else {
             this.position.x += move.size.x;
             this.speed.x = 0;
         }
-        this.canJump = true;
     }
 }

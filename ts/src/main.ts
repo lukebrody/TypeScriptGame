@@ -10,7 +10,7 @@ const context = <CanvasRenderingContext2D> mainViewport.getContext("2d");
 
 let scene = new Scene([
     new Square(), 
-    new Player(new Point(100, 100), new Vector(300, 500), 2000, 500, 20, 20000),
+    new Player(new Point(100, 100), new Vector(300, 500), 2000, 1000, 20, 20000, 1000),
     new Wall(Rect.make(0, 0, 800, 20)),
     new Wall(Rect.make(0, 0, 20, 450)),
     new Wall(Rect.make(0, 450, 800, -20)),

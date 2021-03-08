@@ -26,5 +26,5 @@ export class Wall implements GameElement {
         return Option.none()
     }
 
-    collide(move: Rect): void {}
+    collide(move: Rect, delta: time): void {}
 }
