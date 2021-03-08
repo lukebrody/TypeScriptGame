@@ -65,6 +65,8 @@ export class Vector {
             return vec.mul(this.dot(vec) / (vec.magnitude() * vec.magnitude()));
         }
     }
+
+    static zero = new Vector(0, 0);
 }
 
 export class Rect {

@@ -5,18 +5,21 @@ import { time, GameElement } from "./GameElement"
 
 export class Player implements GameElement {
     position: Point
-    maxSpeed: number
+    maxSpeed: Vector
     radius: number
     gravity: number
     moveAcceleration: number
     speed = new Vector(0, 0);
+    jumpAcceleration: number
+    canJump = true;
 
-    constructor(position: Point, maxSpeed: number, moveAcceleration: number, gravity: number, radius: number) {
+    constructor(position: Point, maxSpeed: Vector, moveAcceleration: number, gravity: number, radius: number, jumpAcceleration: number) {
         this.position = position;
         this.maxSpeed = maxSpeed;
         this.gravity = gravity;
         this.radius = radius;
         this.moveAcceleration = moveAcceleration;
+        this.jumpAcceleration = jumpAcceleration;
     }
 
     update(frame: time, delta: time): void {
@@ -27,13 +30,14 @@ export class Player implements GameElement {
         if(controls.keyPressed("d")) {
             acceleration.x += this.moveAcceleration;
         }
-        if(controls.keyPressed("w")) {
-            acceleration.y -= this.moveAcceleration;
+        if((controls.keyPressed("w") || controls.keyPressed(" ")) && this.canJump) {
+            acceleration.y -= this.jumpAcceleration;
+            this.canJump = false;
         }
-        if(controls.keyPressed("s")) {
-            acceleration.y += this.moveAcceleration;
-        }
-        this.speed = new Vector(Math.min(this.maxSpeed, this.speed.x + acceleration.x * delta), Math.min(this.maxSpeed, this.speed.y + acceleration.y * delta));
+        this.speed = new Vector(
+            Math.max(-this.maxSpeed.x, Math.min(this.maxSpeed.x, this.speed.x + acceleration.x * delta)),
+            Math.max(-this.maxSpeed.y, Math.min(this.maxSpeed.y, this.speed.y + acceleration.y * delta))
+        );
         this.position = this.position.add(this.speed.mul(delta));
     }
 
@@ -56,8 +60,11 @@ export class Player implements GameElement {
     collide(move: Rect): void {
         if (Math.abs(move.size.y) < Math.abs(move.size.x)) {
             this.position.y += move.size.y;
+            this.speed.y = 0;
         } else {
             this.position.x += move.size.x;
+            this.speed.x = 0;
         }
+        this.canJump = true;
     }
 }
