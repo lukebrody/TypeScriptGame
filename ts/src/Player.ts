@@ -11,10 +11,19 @@ export class Player implements GameElement {
     moveAcceleration: number
     speed = new Vector(0, 0);
     jumpAcceleration: number
-    canJump = true;
+    jumpCollision = true;
+    jumpKeypress = true;
     friction: number
 
-    constructor(position: Point, maxSpeed: Vector, moveAcceleration: number, gravity: number, radius: number, jumpAcceleration: number, friction: number) {
+    constructor(
+        position: Point, 
+        maxSpeed: Vector, 
+        moveAcceleration: number,
+        gravity: number, 
+        radius: number, 
+        jumpAcceleration: number, 
+        friction: number
+    ) {
         this.position = position;
         this.maxSpeed = maxSpeed;
         this.gravity = gravity;
@@ -26,15 +35,19 @@ export class Player implements GameElement {
 
     update(frame: time, delta: time): void {
         let acceleration = new Vector(0, this.gravity);
-        if(controls.keyPressed("a")) {
+        if(controls.keyPressed("a") && this.jumpCollision) {
             acceleration.x -= this.moveAcceleration;
         }
-        if(controls.keyPressed("d")) {
+        if(controls.keyPressed("d") && this.jumpCollision) {
             acceleration.x += this.moveAcceleration;
         }
-        if((controls.keyPressed("w") || controls.keyPressed(" ")) && this.canJump) {
+        if((controls.keyPressed("w") || controls.keyPressed(" ")) && this.jumpCollision && this.jumpKeypress) {
             acceleration.y -= this.jumpAcceleration;
-            this.canJump = false;
+            this.jumpCollision = false;
+            this.jumpKeypress = false;
+        }
+        if(!(controls.keyPressed("w") || controls.keyPressed(" "))) {
+            this.jumpKeypress = true;
         }
         this.speed = new Vector(
             Math.max(-this.maxSpeed.x, Math.min(this.maxSpeed.x, this.speed.x + acceleration.x * delta)),
@@ -68,7 +81,9 @@ export class Player implements GameElement {
             } else {
                 this.speed.x = Math.min(0, this.speed.x + (this.friction * delta));
             }
-            this.canJump = true;
+            if(move.size.y < 0) {
+                this.jumpCollision = true;
+            }
         } else {
             this.position.x += move.size.x;
             this.speed.x = 0;
