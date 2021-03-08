@@ -13,11 +13,11 @@ let scene = new Scene([
     new Player(
         new Point(100, 100), /* Position */
         new Vector(300, 500), /* Max Speed */
-        10000, /* Ground move acceleration */
+        5000, /* Ground move acceleration */
         1000, /* Gravity */
         20, /* Circle Radius */
         20000, /* Jump acceleration */
-        5000 /* Friction */
+        2500 /* Friction */
     ),
     new Wall(Rect.make(0, 0, 800, 20)),
     new Wall(Rect.make(0, 0, 20, 450)),

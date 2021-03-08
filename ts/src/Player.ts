@@ -11,7 +11,6 @@ export class Player implements GameElement {
     moveAcceleration: number
     speed = new Vector(0, 0);
     jumpAcceleration: number
-    jumpCollision = true;
     jumpKeypress = true;
     friction: number
 
@@ -35,15 +34,14 @@ export class Player implements GameElement {
 
     update(frame: time, delta: time): void {
         let acceleration = new Vector(0, this.gravity);
-        if(controls.keyPressed("a") && this.jumpCollision) {
+        if(controls.keyPressed("a")) {
             acceleration.x -= this.moveAcceleration;
         }
-        if(controls.keyPressed("d") && this.jumpCollision) {
+        if(controls.keyPressed("d")) {
             acceleration.x += this.moveAcceleration;
         }
-        if((controls.keyPressed("w") || controls.keyPressed(" ")) && this.jumpCollision && this.jumpKeypress) {
+        if((controls.keyPressed("w") || controls.keyPressed(" ")) && this.speed.y == 0 && this.jumpKeypress) {
             acceleration.y -= this.jumpAcceleration;
-            this.jumpCollision = false;
             this.jumpKeypress = false;
         }
         if(!(controls.keyPressed("w") || controls.keyPressed(" "))) {
@@ -76,13 +74,12 @@ export class Player implements GameElement {
         if (Math.abs(move.size.y) < Math.abs(move.size.x)) {
             this.position.y += move.size.y;
             this.speed.y = 0;
-            if(this.speed.x > 0) {
-                this.speed.x = Math.max(0, this.speed.x - (this.friction * delta));
-            } else {
-                this.speed.x = Math.min(0, this.speed.x + (this.friction * delta));
-            }
-            if(move.size.y < 0) {
-                this.jumpCollision = true;
+            if(!(controls.keyPressed("a") || controls.keyPressed("d"))) {
+                if(this.speed.x > 0) {
+                    this.speed.x = Math.max(0, this.speed.x - (this.friction * delta));
+                } else {
+                    this.speed.x = Math.min(0, this.speed.x + (this.friction * delta));
+                }
             }
         } else {
             this.position.x += move.size.x;
