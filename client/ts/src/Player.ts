@@ -17,6 +17,7 @@ export class Player implements GameElement {
     friction: number
     socket: WebSocket
     id: PlayerId
+    onGround: Option<time> = Option.none();
 
     constructor(
         position: Point, 
@@ -39,6 +40,10 @@ export class Player implements GameElement {
         this.id = uuid();
     }
 
+    onGroundStable(frame: time): boolean {
+        return this.onGround.filter(g => { return frame - g > 0.25 }).isSome()
+    }
+
     update(frame: time, delta: time): void {
         let acceleration = new Vector(0, this.gravity);
         if(controls.keyPressed("a")) {
@@ -47,7 +52,7 @@ export class Player implements GameElement {
         if(controls.keyPressed("d")) {
             acceleration.x += this.moveAcceleration;
         }
-        if((controls.keyPressed("w") || controls.keyPressed(" ")) && Math.abs(this.speed.y) < 10 && this.jumpKeypress) {
+        if((controls.keyPressed("w") || controls.keyPressed(" ")) && this.onGroundStable(frame) && this.jumpKeypress) {
             acceleration.y -= this.jumpAcceleration;
             this.jumpKeypress = false;
         }
@@ -70,7 +75,13 @@ export class Player implements GameElement {
     }
 
     draw(frame: time, ctx: CanvasRenderingContext2D): void {
-        ctx.fillStyle = "#FF0000";
+        if(this.onGroundStable(frame)) {
+            ctx.fillStyle = "#00FF00";
+        } else if(this.onGround.isSome()) {
+            ctx.fillStyle = "#0000FF";
+        } else {
+            ctx.fillStyle = "#FF0000";
+        }
         ctx.beginPath();
         ctx.ellipse(this.position.x, this.position.y, this.radius, this.radius, 0, 0, 2 * Math.PI);
         ctx.fill();
@@ -85,7 +96,18 @@ export class Player implements GameElement {
         return Option.some(new Rect(this.position.sub(size.div(2)), size));
     }
 
-    collide(moves: Rect[], delta: time): void {
+    collide(moves: Rect[], frame: time, delta: time): void {
+
+        const hasGroundCollision = moves.filter(m => {
+            return Math.abs(m.size.y) < Math.abs(m.size.x) && m.center().y > this.position.y;
+        }).length > 0;
+
+        if(hasGroundCollision) {
+            this.onGround = Option.some(this.onGround.getOrElse(frame));
+        } else {
+            this.onGround = Option.none();
+        }
+
         moves.forEach(move => {
             if (Math.abs(move.size.y) < Math.abs(move.size.x)) {
                 this.position.y += move.size.y;

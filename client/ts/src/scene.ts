@@ -35,7 +35,7 @@ export class Scene implements GameElement {
                         });
                     });
                 });
-                target.collide(collisionRects, delta);
+                target.collide(collisionRects, frame, delta);
             });
         });
     }
@@ -43,14 +43,14 @@ export class Scene implements GameElement {
     draw(frame: time, context: CanvasRenderingContext2D): void {
         this.drawables.forEach(drawable => { 
             drawable.draw(frame, context); 
-            drawable.collisionStatic(frame).map(staticCollisionRect => {
-                context.fillStyle = "#00ff00";
-                context.fillRect(staticCollisionRect.origin.x, staticCollisionRect.origin.y, staticCollisionRect.size.x, staticCollisionRect.size.y);
-            });
-            drawable.collisionDynamic().map(dynamicCollisionRect => {
-                context.fillStyle = "#00ff00";
-                context.fillRect(dynamicCollisionRect.origin.x, dynamicCollisionRect.origin.y, dynamicCollisionRect.size.x, dynamicCollisionRect.size.y);
-            });
+            // drawable.collisionStatic(frame).map(staticCollisionRect => {
+            //     context.fillStyle = "#00ff00";
+            //     context.fillRect(staticCollisionRect.origin.x, staticCollisionRect.origin.y, staticCollisionRect.size.x, staticCollisionRect.size.y);
+            // });
+            // drawable.collisionDynamic().map(dynamicCollisionRect => {
+            //     context.fillStyle = "#00ff00";
+            //     context.fillRect(dynamicCollisionRect.origin.x, dynamicCollisionRect.origin.y, dynamicCollisionRect.size.x, dynamicCollisionRect.size.y);
+            // });
         });
         this.savedCollisionRect.map(collisionRect => {
             context.fillStyle = "#ff0000";

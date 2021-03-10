@@ -1,6 +1,5 @@
 import { Scene } from "./Scene"
 import { Point, Rect } from "./math"
-import { Square } from "./Square"
 import { Player } from "./Player"
 import { Wall } from "./Wall"
 import { Vector } from "./math"

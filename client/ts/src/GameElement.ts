@@ -11,5 +11,5 @@ export interface GameElement {
     collisionStatic(frame: time): Option<Rect>
     collisionDynamic(): Option<Rect>
 
-    collide(collisionRects: Rect[], delta: time): void
+    collide(collisionRects: Rect[], frame: time, delta: time): void
 }
