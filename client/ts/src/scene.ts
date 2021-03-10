@@ -1,5 +1,4 @@
-import { controls } from "./controls"
-import { Point, Rect, Vector } from "./math"
+import { Rect } from "./math"
 import { time, GameElement } from "./GameElement"
 
 export class Scene implements GameElement {
