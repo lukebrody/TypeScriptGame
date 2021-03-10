@@ -1,9 +1,6 @@
-import { controls } from "./controls"
 import { Point, Rect, Vector } from "./math"
-import { None, Option } from "prelude-ts"
 import { time, GameElement } from "./GameElement"
-import { NetworkMessage, PlayerPositionMessage, PlayerId } from "./NetworkMessage"
-import { v4 as uuid } from 'uuid';
+import { PlayerId } from "./NetworkMessage"
 
 export class NetworkPlayer implements GameElement {
     position: Point
@@ -47,13 +44,13 @@ export class NetworkPlayer implements GameElement {
         ctx.fill();
     }
 
-    collisionStatic(frame: time): Option<Rect> {
+    collisionStatic(frame: time): Rect | undefined {
         const size = new Vector(this.radius * 2, this.radius * 2);
-        return Option.some(new Rect(this.position.sub(size.div(2)), size));
+        return new Rect(this.position.sub(size.div(2)), size);
     }
 
-    collisionDynamic(): Option<Rect> {
-        return Option.none();
+    collisionDynamic(): Rect | undefined {
+        return undefined;
     }
 
     collide(move: Rect[], frame: time, delta: time): void {}

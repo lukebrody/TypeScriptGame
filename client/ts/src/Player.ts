@@ -1,6 +1,5 @@
 import { controls } from "./controls"
 import { Point, Rect, Vector } from "./math"
-import { None, Option } from "prelude-ts"
 import { time, GameElement } from "./GameElement"
 import { NetworkMessage, PlayerPositionMessage, PlayerId } from "./NetworkMessage"
 import { v4 as uuid } from 'uuid';
@@ -17,7 +16,7 @@ export class Player implements GameElement {
     friction: number
     socket: WebSocket
     id: PlayerId
-    onGround: Option<time> = Option.none();
+    onGround?: time = undefined;
 
     constructor(
         position: Point, 
@@ -41,7 +40,7 @@ export class Player implements GameElement {
     }
 
     onGroundStable(frame: time): boolean {
-        return this.onGround.filter(g => { return frame - g > 0.25 }).isSome()
+        return this.onGround != undefined && frame - this.onGround > 0.25;
     }
 
     update(frame: time, delta: time): void {
@@ -77,7 +76,7 @@ export class Player implements GameElement {
     draw(frame: time, ctx: CanvasRenderingContext2D): void {
         if(this.onGroundStable(frame)) {
             ctx.fillStyle = "#00FF00";
-        } else if(this.onGround.isSome()) {
+        } else if(this.onGround != undefined) {
             ctx.fillStyle = "#0000FF";
         } else {
             ctx.fillStyle = "#FF0000";
@@ -87,13 +86,13 @@ export class Player implements GameElement {
         ctx.fill();
     }
 
-    collisionStatic(frame: time): Option<Rect> {
-        return Option.none()
+    collisionStatic(frame: time): Rect | undefined {
+        return undefined;
     }
 
-    collisionDynamic(): Option<Rect> {
+    collisionDynamic(): Rect | undefined {
         const size = new Vector(this.radius * 2, this.radius * 2);
-        return Option.some(new Rect(this.position.sub(size.div(2)), size));
+        return new Rect(this.position.sub(size.div(2)), size);
     }
 
     collide(moves: Rect[], frame: time, delta: time): void {
@@ -103,9 +102,9 @@ export class Player implements GameElement {
         }).length > 0;
 
         if(hasGroundCollision) {
-            this.onGround = Option.some(this.onGround.getOrElse(frame));
+            this.onGround = this.onGround ?? frame;
         } else {
-            this.onGround = Option.none();
+            this.onGround = undefined;
         }
 
         moves.forEach(move => {

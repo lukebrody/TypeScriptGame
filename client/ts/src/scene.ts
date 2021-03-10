@@ -1,6 +1,5 @@
 import { controls } from "./controls"
 import { Point, Rect, Vector } from "./math"
-import { None, Option } from "prelude-ts"
 import { time, GameElement } from "./GameElement"
 
 export class Scene implements GameElement {
@@ -10,18 +9,21 @@ export class Scene implements GameElement {
         this.drawables = drawables;
     }
 
-    savedCollisionRect: Option<Rect> = Option.none();
+    savedCollisionRect?: Rect = undefined;
 
     update(frame: time, delta: time): void {
         this.drawables.forEach(drawable => { drawable.update(frame, delta); });
         
         this.drawables.forEach(target => {
-            target.collisionDynamic().map(targetRect => {
+            const targetRect = target.collisionDynamic();
+            if(targetRect != undefined) {
                 let collisionRects: Rect[] = []
                 this.drawables.forEach(environment => {
-                    environment.collisionStatic(frame).map(envRect => {
-                        targetRect.intersect(envRect).map(collisionRect => { 
-                            this.savedCollisionRect = Option.some(collisionRect);
+                    const envRect = environment.collisionStatic(frame);
+                    if(envRect != undefined) {
+                        const collisionRect = targetRect.intersect(envRect);
+                        if(collisionRect != undefined) {
+                            this.savedCollisionRect = collisionRect;
                             let centersVector = targetRect.center().subPt(envRect.center());
                             if (centersVector.x < 0) {
                                 collisionRect.origin.x += collisionRect.size.x;
@@ -32,39 +34,36 @@ export class Scene implements GameElement {
                                 collisionRect.size.y *= -1;
                             }
                             collisionRects.push(collisionRect);
-                        });
-                    });
+                        }
+                    }
                 });
                 target.collide(collisionRects, frame, delta);
-            });
+            }
         });
     }
 
     draw(frame: time, context: CanvasRenderingContext2D): void {
         this.drawables.forEach(drawable => { 
             drawable.draw(frame, context); 
-            // drawable.collisionStatic(frame).map(staticCollisionRect => {
-            //     context.fillStyle = "#00ff00";
-            //     context.fillRect(staticCollisionRect.origin.x, staticCollisionRect.origin.y, staticCollisionRect.size.x, staticCollisionRect.size.y);
-            // });
-            // drawable.collisionDynamic().map(dynamicCollisionRect => {
-            //     context.fillStyle = "#00ff00";
-            //     context.fillRect(dynamicCollisionRect.origin.x, dynamicCollisionRect.origin.y, dynamicCollisionRect.size.x, dynamicCollisionRect.size.y);
-            // });
         });
-        this.savedCollisionRect.map(collisionRect => {
+        if(this.savedCollisionRect != undefined) {
             context.fillStyle = "#ff0000";
-            context.fillRect(collisionRect.origin.x, collisionRect.origin.y, collisionRect.size.x, collisionRect.size.y);
-        });
+            context.fillRect(
+                this.savedCollisionRect.origin.x, 
+                this.savedCollisionRect.origin.y, 
+                this.savedCollisionRect.size.x, 
+                this.savedCollisionRect.size.y
+            );
+        }
     }
 
-    collisionStatic(frame: time): Option<Rect> {
-        return Option.none()
+    collisionStatic(frame: time): Rect | undefined {
+        return undefined;
     }
 
-    collisionDynamic(): Option<Rect> {
-        return Option.none()
+    collisionDynamic(): Rect | undefined {
+        return undefined;
     }
 
-    collide(move: Rect[], delta: time): void {}
+    collide(move: Rect[], frame: time, delta: time): void {}
 }

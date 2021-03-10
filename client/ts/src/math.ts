@@ -1,4 +1,3 @@
-import { Option } from "prelude-ts"
 
 export class Point {
     x: number
@@ -108,12 +107,14 @@ export class Rect {
         return new Range(this.min().y, this.max().y);
     }
 
-    intersect(other: Rect): Option<Rect> {
-        return this.xRange().intersect(other.xRange()).flatMap(xIntersect => {
-            return this.yRange().intersect(other.yRange()).map(yIntersect => {
-                return new Rect(new Point(xIntersect.min, yIntersect.min), new Vector(xIntersect.length(), yIntersect.length()));
-            });
-        });
+    intersect(other: Rect): Rect | undefined {
+        const xIntersect = this.xRange().intersect(other.xRange());
+        const yIntersect = this.yRange().intersect(other.yRange());
+        if(xIntersect != undefined && yIntersect != undefined) {
+            return new Rect(new Point(xIntersect.min, yIntersect.min), new Vector(xIntersect.length(), yIntersect.length())); 
+        } else {
+            return undefined;
+        }
     }
 
     center(): Point {
@@ -135,13 +136,13 @@ export class Range {
         return value >= this.min && value <= this.max;
     }
 
-    intersect(other: Range): Option<Range> {
+    intersect(other: Range): Range | undefined {
         const newMin = Math.max(this.min, other.min);
         const newMax = Math.min(this.max, other.max);
         if(newMin <= newMax) {
-            return Option.some(new Range(newMin, newMax));
+            return new Range(newMin, newMax);
         } else {
-            return Option.none();
+            return undefined;
         }
     }
 

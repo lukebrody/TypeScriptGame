@@ -1,6 +1,5 @@
 import { controls } from "./controls"
 import { Point, Rect, Vector } from "./math"
-import { None, Option } from "prelude-ts"
 import { time, GameElement } from "./GameElement"
 
 export class Wall implements GameElement {
@@ -18,12 +17,12 @@ export class Wall implements GameElement {
         context.fillRect(r.origin.x, r.origin.y, r.size.x, r.size.y);
     }
 
-    collisionStatic(frame: time): Option<Rect> {
-        return Option.some(this.rect)
+    collisionStatic(frame: time): Rect | undefined {
+        return this.rect;
     }
 
-    collisionDynamic(): Option<Rect> {
-        return Option.none()
+    collisionDynamic(): Rect | undefined {
+        return undefined;
     }
 
     collide(move: Rect[], frame: time, delta: time): void {}
