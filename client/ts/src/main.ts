@@ -5,8 +5,13 @@ import { Player } from "./Player"
 import { Wall } from "./Wall"
 import { Vector } from "./math"
 import { NetworkMessage, PlayerId } from "./NetworkMessage" 
+import { NetworkPlayer } from "./NetworkPlayer"
 
 const socket = new WebSocket(`ws://${window.location.host}`);
+
+socket.onopen = event => {
+    console.log("socket open");
+};
  
 const mainViewport = <HTMLCanvasElement> document.getElementById("mainViewport");
 const context = <CanvasRenderingContext2D> mainViewport.getContext("2d");
@@ -38,20 +43,25 @@ socket.onmessage = event => {
     // TODO: Validation. ts-auto-guard looks promising, but I can't figure out how to set it up (command doesn't execute)
     const message = JSON.parse(event.data) as NetworkMessage;
     message.playerPosition.map(playerPositionMessage => { 
-        if(!networkPlayers.has(playerPositionMessage.id)) {
-            const player = new NetworkPlayer(player => {
-                const index = scene.drawables.indexOf(player);
-                if(index != -1) {
-                    scene.drawables.splice(index, 1);
+        const player = networkPlayers.get(playerPositionMessage.id);
+        if(player) {
+            player.newPosition(playerPositionMessage.position);
+        } else {
+            const player = new NetworkPlayer(
+                playerPositionMessage.id,
+                playerPositionMessage.position,
+                20,
+                player => {
+                    const index = scene.drawables.indexOf(player);
+                    if(index != -1) {
+                        scene.drawables.splice(index, 1);
+                    }
+                    networkPlayers.delete(player.id);
                 }
-                networkPlayers.delete(player.id);
-            });
+            );
             networkPlayers.set(playerPositionMessage.id, player);
             scene.drawables.push(player);
         }
-
-        const player = networkPlayers.get(playerPositionMessage.id);
-        player.position = playerPositionMessage.position;
     });
 }
 

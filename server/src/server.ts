@@ -14,10 +14,8 @@ const wss = new WebSocket.Server({ server });
 let sockets: Set<WebSocket> = new Set<WebSocket>();
 
 wss.on('connection', (ws: WebSocket) => {
-    ws.onopen = event => {
-        sockets.add(ws);
-    };
-    ws.close = event => {
+    sockets.add(ws);
+    ws.onclose = event => {
         sockets.delete(ws);
     }
     ws.onmessage = event => {
