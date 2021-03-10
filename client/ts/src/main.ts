@@ -17,7 +17,6 @@ const mainViewport = <HTMLCanvasElement> document.getElementById("mainViewport")
 const context = <CanvasRenderingContext2D> mainViewport.getContext("2d");
 
 const scene = new Scene([
-    new Square(), 
     new Player(
         new Point(100, 100), /* Position */
         new Vector(300, 500), /* Max Speed */

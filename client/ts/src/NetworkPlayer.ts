@@ -19,14 +19,18 @@ export class NetworkPlayer implements GameElement {
         removeSelf: (p: NetworkPlayer) => void
     ) {
         this.id = id;
-        this.position = position;
+        this.position = new Point(position.x, position.y); // see comment for newPosition
         this.radius = radius;
         this.lastUpdate = performance.now();
         this.removeSelf = removeSelf;
     }
 
     newPosition(pos: Point) {
-        this.position = pos;
+        // Set these individually since the passed object isn't a typescript object
+        // (I know, this is terrible)
+        this.position.x = pos.x;
+        this.position.y = pos.y;
+
         this.lastUpdate = performance.now();
     }
 
@@ -44,7 +48,8 @@ export class NetworkPlayer implements GameElement {
     }
 
     collisionStatic(frame: time): Option<Rect> {
-        return Option.none();
+        const size = new Vector(this.radius * 2, this.radius * 2);
+        return Option.some(new Rect(this.position.sub(size.div(2)), size));
     }
 
     collisionDynamic(): Option<Rect> {

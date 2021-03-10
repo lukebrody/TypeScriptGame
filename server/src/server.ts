@@ -20,7 +20,7 @@ wss.on('connection', (ws: WebSocket) => {
     }
     ws.onmessage = event => {
         sockets.forEach(otherSocket => {
-            if(otherSocket != ws) {
+            if(otherSocket != ws && otherSocket.readyState == WebSocket.OPEN) {
                 otherSocket.send(event.data);
             }
         });
