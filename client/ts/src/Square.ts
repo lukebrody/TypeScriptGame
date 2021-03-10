@@ -29,5 +29,5 @@ export class Square implements GameElement {
         return Option.none()
     }
 
-    collide(move: Rect, delta: time): void {}
+    collide(move: Rect[], delta: time): void {}
 }

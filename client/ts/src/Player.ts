@@ -85,20 +85,22 @@ export class Player implements GameElement {
         return Option.some(new Rect(this.position.sub(size.div(2)), size));
     }
 
-    collide(move: Rect, delta: time): void {
-        if (Math.abs(move.size.y) < Math.abs(move.size.x)) {
-            this.position.y += move.size.y;
-            this.speed.y *= -0.5;
-            if(!(controls.keyPressed("a") || controls.keyPressed("d"))) {
-                if(this.speed.x > 0) {
-                    this.speed.x = Math.max(0, this.speed.x - (this.friction * delta));
-                } else {
-                    this.speed.x = Math.min(0, this.speed.x + (this.friction * delta));
+    collide(moves: Rect[], delta: time): void {
+        moves.forEach(move => {
+            if (Math.abs(move.size.y) < Math.abs(move.size.x)) {
+                this.position.y += move.size.y;
+                this.speed.y *= -0.5;
+                if(!(controls.keyPressed("a") || controls.keyPressed("d"))) {
+                    if(this.speed.x > 0) {
+                        this.speed.x = Math.max(0, this.speed.x - (this.friction * delta));
+                    } else {
+                        this.speed.x = Math.min(0, this.speed.x + (this.friction * delta));
+                    }
                 }
+            } else {
+                this.position.x += move.size.x;
+                this.speed.x *= -0.5;
             }
-        } else {
-            this.position.x += move.size.x;
-            this.speed.x *= -0.5;
-        }
+        });
     }
 }

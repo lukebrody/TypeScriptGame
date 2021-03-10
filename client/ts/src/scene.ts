@@ -17,6 +17,7 @@ export class Scene implements GameElement {
         
         this.drawables.forEach(target => {
             target.collisionDynamic().map(targetRect => {
+                let collisionRects: Rect[] = []
                 this.drawables.forEach(environment => {
                     environment.collisionStatic(frame).map(envRect => {
                         targetRect.intersect(envRect).map(collisionRect => { 
@@ -30,10 +31,11 @@ export class Scene implements GameElement {
                                 collisionRect.origin.y += collisionRect.size.y;
                                 collisionRect.size.y *= -1;
                             }
-                            target.collide(collisionRect, delta);
+                            collisionRects.push(collisionRect);
                         });
                     });
                 });
+                target.collide(collisionRects, delta);
             });
         });
     }
@@ -64,5 +66,5 @@ export class Scene implements GameElement {
         return Option.none()
     }
 
-    collide(move: Rect, delta: time): void {}
+    collide(move: Rect[], delta: time): void {}
 }
