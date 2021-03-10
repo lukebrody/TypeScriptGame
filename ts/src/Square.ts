@@ -7,7 +7,7 @@ export class Square implements GameElement {
     update(frame: time, delta: time): void {}
 
     private rect(frame: time): Rect {
-        const center = new Point(100, 100 + (50 * Math.sin(frame)));
+        const center = new Point(600, 300 + (50 * Math.sin(frame)));
         const size = new Vector(50, 50);
         return new Rect(
             center.sub(size.div(2)),
