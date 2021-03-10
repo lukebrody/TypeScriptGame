@@ -64,7 +64,7 @@ export class Player implements GameElement {
 
         if(this.socket.readyState == WebSocket.OPEN) {
             this.socket.send(JSON.stringify(new class extends NetworkMessage {
-                playerPosition = Option.some(positionMessage)
+                playerPosition = positionMessage
             }));
         }
     }

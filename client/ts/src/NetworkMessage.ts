@@ -1,9 +1,7 @@
 import { Point } from "./math";
 
-import { Option } from 'prelude-ts'
-
 export abstract class NetworkMessage {
-    playerPosition: Option<PlayerPositionMessage> = Option.none();
+    playerPosition: PlayerPositionMessage | undefined = undefined;
 }
 
 export type PlayerId = string

@@ -42,7 +42,8 @@ const networkPlayers = new Map<PlayerId, NetworkPlayer>();
 socket.onmessage = event => {
     // TODO: Validation. ts-auto-guard looks promising, but I can't figure out how to set it up (command doesn't execute)
     const message = JSON.parse(event.data) as NetworkMessage;
-    message.playerPosition.map(playerPositionMessage => { 
+    if(message.playerPosition) {
+        const playerPositionMessage = message.playerPosition;
         const player = networkPlayers.get(playerPositionMessage.id);
         if(player) {
             player.newPosition(playerPositionMessage.position);
@@ -62,7 +63,7 @@ socket.onmessage = event => {
             networkPlayers.set(playerPositionMessage.id, player);
             scene.drawables.push(player);
         }
-    });
+    }
 }
 
 let lastTimestamp: DOMHighResTimeStamp = performance.now();
