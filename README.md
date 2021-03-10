@@ -1,16 +1,16 @@
 # To run this
 
-## in /client
-
 install `npm` somehow
 
-`cd` into the directory
+## `cd` into `/client`
 
 `npm install` (installs necessary packages)
 
 `npm run wpw` (watches files for changes, recompiles code)
 
-## in /server
+## `cd` into `/server`
+
+`npm install`
 
 `npm run serve` (serves the website, watches for changes, recompiles, restarts server (if compilation successful))
 
