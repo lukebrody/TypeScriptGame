@@ -35,7 +35,7 @@ export class NetworkPlayer implements GameElement {
     }
 
     update(frame: time, delta: time): void {
-        if (frame - this.lastUpdate > 5) {
+        if (frame - (this.lastUpdate / 1000) > 3) {
             this.removeSelf(this);
         }
     }
