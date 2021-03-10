@@ -22,7 +22,7 @@ const scene = new Scene([
         new Vector(300, 500), /* Max Speed */
         5000, /* Ground move acceleration */
         1000, /* Gravity */
-        20, /* Circle Radius */
+        30, /* Circle Radius */
         20000, /* Jump acceleration */
         2500,
         socket /* Friction */
@@ -31,9 +31,7 @@ const scene = new Scene([
     new Wall(Rect.make(0, 0, 20, 450)),
     new Wall(Rect.make(0, 450, 800, -20)),
     new Wall(Rect.make(800, 0, -20, 450)),
-    new Wall(Rect.make(100, 400, 100, 10)),
-    new Wall(Rect.make(250, 350, 100, 10)),
-    new Wall(Rect.make(400, 300, 100, 10))
+    new Wall(Rect.make(300, 450, 200, -100)),
 ]);
 
 const networkPlayers = new Map<PlayerId, NetworkPlayer>();
@@ -50,7 +48,7 @@ socket.onmessage = event => {
             const player = new NetworkPlayer(
                 playerPositionMessage.id,
                 playerPositionMessage.position,
-                20,
+                30,
                 player => {
                     const index = scene.drawables.indexOf(player);
                     if(index != -1) {
