@@ -2,28 +2,16 @@ import { Scene } from "./Scene"
 import { Point, Rect } from "./math"
 import { Square } from "./Square"
 import { Player } from "./Player"
-import { Wall } from "./Wall";
-import { Vector } from "./math";
+import { Wall } from "./Wall"
+import { Vector } from "./math"
+import { NetworkMessage, PlayerId } from "./NetworkMessage" 
 
-const socket = new WebSocket(`ws://${window.location.host}`)
-
-socket.onopen = event => {
-    console.log("Socket opened!");
-    socket.send("Hello World!");
-}
-
-socket.onmessage = event => {
-    console.log(`Got data ${event.data}`);
-}
-
-socket.onerror = event => {
-    console.log("Socket error");
-}
+const socket = new WebSocket(`ws://${window.location.host}`);
  
 const mainViewport = <HTMLCanvasElement> document.getElementById("mainViewport");
 const context = <CanvasRenderingContext2D> mainViewport.getContext("2d");
 
-let scene = new Scene([
+const scene = new Scene([
     new Square(), 
     new Player(
         new Point(100, 100), /* Position */
@@ -32,7 +20,8 @@ let scene = new Scene([
         1000, /* Gravity */
         20, /* Circle Radius */
         20000, /* Jump acceleration */
-        2500 /* Friction */
+        2500,
+        socket /* Friction */
     ),
     new Wall(Rect.make(0, 0, 800, 20)),
     new Wall(Rect.make(0, 0, 20, 450)),
@@ -42,6 +31,29 @@ let scene = new Scene([
     new Wall(Rect.make(250, 350, 100, 10)),
     new Wall(Rect.make(400, 300, 100, 10))
 ]);
+
+const networkPlayers = new Map<PlayerId, NetworkPlayer>();
+
+socket.onmessage = event => {
+    // TODO: Validation. ts-auto-guard looks promising, but I can't figure out how to set it up (command doesn't execute)
+    const message = JSON.parse(event.data) as NetworkMessage;
+    message.playerPosition.map(playerPositionMessage => { 
+        if(!networkPlayers.has(playerPositionMessage.id)) {
+            const player = new NetworkPlayer(player => {
+                const index = scene.drawables.indexOf(player);
+                if(index != -1) {
+                    scene.drawables.splice(index, 1);
+                }
+                networkPlayers.delete(player.id);
+            });
+            networkPlayers.set(playerPositionMessage.id, player);
+            scene.drawables.push(player);
+        }
+
+        const player = networkPlayers.get(playerPositionMessage.id);
+        player.position = playerPositionMessage.position;
+    });
+}
 
 let lastTimestamp: DOMHighResTimeStamp = performance.now();
 

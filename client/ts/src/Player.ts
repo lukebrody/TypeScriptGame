@@ -2,6 +2,8 @@ import { controls } from "./controls"
 import { Point, Rect, Vector } from "./math"
 import { None, Option } from "prelude-ts"
 import { time, GameElement } from "./GameElement"
+import { NetworkMessage, PlayerPositionMessage, PlayerId } from "./NetworkMessage"
+import { v4 as uuid } from 'uuid';
 
 export class Player implements GameElement {
     position: Point
@@ -13,6 +15,8 @@ export class Player implements GameElement {
     jumpAcceleration: number
     jumpKeypress = true;
     friction: number
+    socket: WebSocket
+    id: PlayerId
 
     constructor(
         position: Point, 
@@ -21,7 +25,8 @@ export class Player implements GameElement {
         gravity: number, 
         radius: number, 
         jumpAcceleration: number, 
-        friction: number
+        friction: number,
+        socket: WebSocket
     ) {
         this.position = position;
         this.maxSpeed = maxSpeed;
@@ -30,6 +35,8 @@ export class Player implements GameElement {
         this.moveAcceleration = moveAcceleration;
         this.jumpAcceleration = jumpAcceleration;
         this.friction = friction;
+        this.socket = socket;
+        this.id = uuid();
     }
 
     update(frame: time, delta: time): void {
@@ -52,6 +59,14 @@ export class Player implements GameElement {
             Math.max(-this.maxSpeed.y, Math.min(this.maxSpeed.y, this.speed.y + acceleration.y * delta))
         );
         this.position = this.position.add(this.speed.mul(delta));
+
+        const positionMessage = new PlayerPositionMessage(this.id, this.position);
+
+        if(this.socket.readyState == WebSocket.OPEN) {
+            this.socket.send(JSON.stringify(new class extends NetworkMessage {
+                playerPosition = Option.some(positionMessage)
+            }));
+        }
     }
 
     draw(frame: time, ctx: CanvasRenderingContext2D): void {
