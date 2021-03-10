@@ -14,10 +14,12 @@ const server = http.createServer(app);
 // initialize the WebSocket server instance
 const wss = new WebSocket.Server({ server });
 
-let timer: Timer;
-
 wss.on('connection', (ws: WebSocket) => {
     console.log('connection recieved');
+    ws.onmessage = event => {
+        console.log('returning data');
+        ws.send(event.data);
+    };
 });
 
 // start our server

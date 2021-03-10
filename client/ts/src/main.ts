@@ -4,6 +4,21 @@ import { Square } from "./Square"
 import { Player } from "./Player"
 import { Wall } from "./Wall";
 import { Vector } from "./math";
+
+const socket = new WebSocket(`ws://${window.location.host}`)
+
+socket.onopen = event => {
+    console.log("Socket opened!");
+    socket.send("Hello World!");
+}
+
+socket.onmessage = event => {
+    console.log(`Got data ${event.data}`);
+}
+
+socket.onerror = event => {
+    console.log("Socket error");
+}
  
 const mainViewport = <HTMLCanvasElement> document.getElementById("mainViewport");
 const context = <CanvasRenderingContext2D> mainViewport.getContext("2d");
